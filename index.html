@@ -17,14 +17,15 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="img/ios_logo.png" />
   <script>
-    window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer ||
+[];
 
     function gtag() {
       dataLayer.push(arguments);
     }
     gtag('js', new Date());
     gtag('config', 'G-199SL59897');
-  </script>
+</script>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js")
@@ -34,42 +35,132 @@
         .catch((error) => {
           console.error("Service Worker registration failed:", error);
         });
-    }
+}
   </script>
   <style>
     body,
     html {
       margin: 0;
-      padding: 0;
+padding: 0;
       overflow: hidden;
       background-color: #f4f4f4;
       font-family: serif;
       -webkit-tap-highlight-color: transparent;
+}
+
+    /* --- ▼ 新規追加 / 変更 ▼ --- */
+    .view {
+      display: none; /* デフォルトですべてのビューを隠す */
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
     }
+    .view.active {
+      display: block; /* .active クラスで表示 */
+    }
+
+    #libraryView {
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      background-color: #fff;
+    }
+    #libraryView h1 {
+      margin: 0 0 15px 0;
+      font-family: "Helvetica", "serif";
+      color: #555;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    .upload-section {
+      background: #fdfdfd;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      font-family: "Helvetica", "serif";
+    }
+    #fileList {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      font-family: "Helvetica", "serif";
+    }
+    #fileList li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    #fileList li:last-child {
+      border-bottom: none;
+    }
+    .file-info {
+      flex-grow: 1;
+      cursor: pointer;
+    }
+    .file-info strong {
+      font-size: 1.1rem;
+      color: #333;
+    }
+    .file-info span {
+      font-size: 0.8rem;
+      color: #888;
+      margin-left: 10px;
+    }
+    .file-actions button {
+      background: none;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-left: 5px;
+      font-size: 0.8rem;
+    }
+    .file-actions .delete-btn {
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+    .file-actions .delete-btn:hover {
+      background: #e74c3c;
+      color: white;
+    }
+    #libraryMessage {
+      color: #777;
+      padding: 20px 0;
+      font-family: "Helvetica", "serif";
+    }
+    /* --- ▲ 新規追加 / 変更 ▲ --- */
+
 
     .viewer-container {
       width: 100vw;
       height: 100vh;
       writing-mode: vertical-rl;
       overflow-x: auto;
-      scroll-snap-type: x mandatory;
+scroll-snap-type: x mandatory;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
       overflow-wrap: break-word;
       text-align: justify;
-    }
+}
 
     .viewer-container::-webkit-scrollbar {
       display: none;
-    }
+}
 
     .text-content {
       height: 90vh;
       padding: 5vh 0;
       column-width: 85vw;
       column-gap: 1.5em;
-      font-size: 1.2rem;
+font-size: 1.2rem;
       letter-spacing: 0.1em;
       line-height: 1.8;
       line-break: auto;
@@ -78,67 +169,59 @@
       white-space: pre-wrap;
       position: relative;
       z-index: 1;
-    }
+}
 
     .controls {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: rgba(255, 255, 255, 0.8);
+background: rgba(255, 255, 255, 0.8);
       border-top: 0px solid #ccc;
       padding: 10px 15px;
       box-sizing: border-box;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      align-items: center;
+align-items: center;
       font-size: 14px;
       font-family: "Helvetica", "serif";
       z-index: 10;
       transition: transform 0.3s ease-in-out;
       border-radius: 1em 1em 0em 0;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .controls.hidden {
       transform: translateY(100%);
-    }
+}
 
     .controls>div {
       display: flex;
       align-items: center;
       gap: 5px;
-    }
+}
 
     .controls input[type="range"] {
       width: 100px;
-    }
-
-    /*select,
-    ::picker(select) {
-      appearance: base-select;
-      border: 0;
-      border-bottom: 1px solid;
-      border-radius: 0;
-    } */
+}
 
     .progress-bar-container {
       width: 100%;
-      order: -1;
+order: -1;
       padding-bottom: 5px;
     }
 
     #progressBar {
       width: 100%;
       margin: 0;
-      pointer-events: none;
-      /* 表示専用 */
+pointer-events: none;
     }
 
+    /* --- ▼ 変更 ▼ --- */
     .ui-toggle-btn {
       position: fixed;
-      top: 10px;
+top: 10px;
       right: 10px;
       z-index: 11;
       width: 40px;
@@ -146,328 +229,595 @@
       font-size: 20px;
       color: #aaa;
       background: rgba(255, 255, 255, 0.8);
-      border: 0px solid #ccc;
+border: 0px solid #ccc;
       border-radius: 50%;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
+      display: none; /* 変更: デフォルトで非表示 */
+}
+    /* --- ▲ 変更 ▲ --- */
 
     label {
       display: block;
       white-space: nowrap;
-    }
+}
 
-    /* WebKit (Chrome, Safari, Edge) のサム */
     input.progressbar[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
+appearance: none;
     }
 
-    /* Mozilla (Firefox) のサム */
     input.progressbar[type="range"]::-moz-range-thumb {
       appearance: none;
-      display: none;
+display: none;
     }
 
     input.commonbar[type="range"] {
       -webkit-appearance: none;
       -moz-appearance: none;
       width: 100%;
-      height: 25px;
+height: 25px;
       margin: 10px 0;
       background: transparent;
       cursor: pointer;
     }
 
-    /* WebKit (Chrome, Safari, Edge) のトラック */
     input.commonbar[type="range"]::-webkit-slider-runnable-track {
       width: 100%;
-      height: 8px;
+height: 8px;
       background: rgba(240, 240, 240, 0.6);
       border-radius: 4px;
       border: none;
-    }
+}
 
-    /* Mozilla (Firefox) のトラック */
     input.commonbar[type="range"]::-moz-range-track {
       width: 100%;
-      height: 8px;
+height: 8px;
       background: rgba(240, 240, 240, 0.6);
       border-radius: 4px;
       border: none;
-    }
+}
 
-    /* WebKit (Chrome, Safari, Edge) のサム */
     input.commonbar[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
+appearance: none;
       margin-top: -8.5px;
       height: 25px;
       width: 12px;
       background: #ccc;
       border-radius: 20%;
       border: 1px solid #fff;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
       transition: background 0.2s;
-    }
+}
 
-    /* Mozilla (Firefox) のサム */
     input.commonbar[type="range"]::-moz-range-thumb {
       appearance: none;
-      height: 25px;
+height: 25px;
       width: 12px;
       background: #ccc;
       border-radius: 20%;
       border: 1px solid #fff;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-      transition: background 0.2s;
+transition: background 0.2s;
     }
 
-    /* ホバー・アクティブ時のスタイル */
-    /* WebKit/Blink (Chrome, Safari, Edge) */
     input.commonbar[type="range"]:hover::-webkit-slider-thumb,
     input.commonbar[type="range"]:active::-webkit-slider-thumb {
       background: #ddd;
-    }
+}
 
-    /* Mozilla (Firefox) */
     input.commonbar[type="range"]:hover::-moz-range-thumb,
     input.commonbar[type="range"]:active::-moz-range-thumb {
       background: #ddd;
-    }
+}
 
-    /* フォーカス時のスタイル (全ブラウザ共通) */
     input.commonbar[type="range"]:focus {
       outline: none;
-    }
+}
 
     input.commonbar[type="range"]:focus::-webkit-slider-runnable-track {
       box-shadow: 0 0 0 2px #cce5ff;
-    }
+}
 
     input.commonbar[type="range"]:focus::-moz-range-track {
       box-shadow: 0 0 0 2px #cce5ff;
-    }
+}
   </style>
 </head>
 
 <body>
 
-  <button class="ui-toggle-btn" id="uiToggleBtn">・</button>
-
-  <div class="controls" id="controlsPanel">
-    <div class="progress-bar-container">
-      <input type="range" class="progressbar" id="progressBar" min="0" max="100" step="0.1" value="0">
+  <div id="libraryView" class="view active">
+    <h1>Tx.RV 書庫</h1>
+    <div class="upload-section">
+      <div>
+        <label for="fileInput">新規ファイル：</label>
+        <input type="file" id="fileInput" accept=".txt">
+      </div>
+      <div>
+        <label for="encodingSelect">文字コード：</label>
+        <select id="encodingSelect">
+          <option value="shift_jis" selected>Shift_JIS</option>
+          <option value="utf-8">UTF-8</option>
+<option value="euc-jp">EUC-JP</option>
+        </select>
+      </div>
     </div>
-    <div>
-      <label for="fileInput">ファイル：</label>
-      <input type="file" id="fileInput" accept=".txt">
-    </div>
-    <div>
-      <label for="encodingSelect">文字コード：</label>
-      <select id="encodingSelect">
-        <option value="shift_jis" selected>Shift_JIS</option>
-        <option value="utf-8">UTF-8</option>
-        <option value="euc-jp">EUC-JP</option>
-      </select>
-    </div>
-    <hr style="width:100%; margin: 2px 0; border: none; border-top: 1px dashed #ccc;">
-    <div>
-      <label for="fontSize">文字：</label>
-      <input type="range" id="fontSize" class="commonbar" min="0.8" max="3" step="0.1" value="1.2">
-    </div>
-    <div style="display: none;">
-      <label for="columnGap">ページ間：</label>
-      <input type="range" id="columnGap" class="commonbar" min="0.5" max="5" step="0.1" value="1.5">
-    </div>
-    <div>
-      <label for="letterSpacing">文字間：</label>
-      <input type="range" id="letterSpacing" class="commonbar" min="0" max="1" step="0.05" value="0.1">
-    </div>
-    <div>
-      <label for="lineHeight">行幅：</label>
-      <input type="range" id="lineHeight" class="commonbar" min="1.2" max="3" step="0.1" value="1.8">
-    </div>
-    <div>
-      <label for="flipWidth">めくり量：</label>
-      <input type="range" id="flipWidth" class="commonbar" min="0.01" max="1.00" step="0.01" value="0.95" oninput="flipWidth_display.value = flipWidth.value">
-<output for="flipWidth" id="flipWidth_display">0.95</output>
-    </div>
-    <div>
-      <label for="fontFamily">フォント：</label>
-      <select id="fontFamily">
-        <option value="serif">明朝体</option>
-        <option value="Zen Old Mincho">Zen Old Mincho</option>
-        <option value="sans-serif">ゴシック体</option>
-      </select>
-    </div>
-    <div>
-      <input type="checkbox" id="swapTap">
-      <label for="swapTap">タップ左右入替</label>
-    </div>
-  </div>
-
-  <div class="viewer-container" id="viewerContainer">
-    <div class="text-content" id="textContent">
-      　ようこそ、ここはTxシリーズの縦書き表示用テキストファイルビューワーである「Tx.RV」です。下のツールバーから、読みたいテキストファイルを選択してください。
+    <ul id="fileList"></ul>
+    <div id="libraryMessage">
+      　ようこそ、ここはTxシリーズの縦書き表示用テキストファイルビューワーである「Tx.RV」です。上の「新規ファイル」から、読みたいテキストファイルを選択してください。
+      　読み込んだファイルはここにキャッシュされ、次回から選択するだけで続きから読めます。
       　文字化けしてしまう際は、エンコードを変更してみてください。
-      　
-      　JavaScriptの制作には生成AIを使用しています。デザインや動作確認、JavaScriptのエラー修正などは手作業で行なっています。
     </div>
   </div>
+  <div id="readerView" class="view">
+    <button class="ui-toggle-btn" id="uiToggleBtn">・</button>
 
+    <div class="controls" id="controlsPanel">
+      <div class="progress-bar-container">
+        <input type="range" class="progressbar" id="progressBar" min="0" max="100" step="0.1" value="0">
+      </div>
+      <div>
+        <button id="backToLibraryBtn" style="padding: 5px 10px; font-family: 'Helvetica', 'serif';">書庫に戻る</button>
+      </div>
+      <hr style="width:100%; margin: 2px 0; border: none; border-top: 1px dashed #ccc;">
+      <div>
+        <label for="fontSize">文字：</label>
+        <input type="range" id="fontSize" class="commonbar" min="0.8" max="3" step="0.1" value="1.2">
+      </div>
+      <div style="display: none;">
+        <label for="columnGap">ページ間：</label>
+        <input type="range" id="columnGap" class="commonbar" min="0.5" max="5" step="0.1" value="1.5">
+      </div>
+      <div>
+        <label for="letterSpacing">文字間：</label>
+<input type="range" id="letterSpacing" class="commonbar" min="0" max="1" step="0.05" value="0.1">
+      </div>
+      <div>
+        <label for="lineHeight">行幅：</label>
+        <input type="range" id="lineHeight" class="commonbar" min="1.2" max="3" step="0.1" value="1.8">
+      </div>
+      <div>
+        <label for="flipWidth">めくり量：</label>
+        <input type="range" id="flipWidth" class="commonbar" min="0.01" max="1.00" step="0.01" value="0.95" oninput="flipWidth_display.value = flipWidth.value">
+        <output for="flipWidth" id="flipWidth_display">0.95</output>
+      </div>
+      <div>
+        <label for="fontFamily">フォント：</label>
+        <select id="fontFamily">
+<option value="serif">明朝体</option>
+          <option value="Zen Old Mincho">Zen Old Mincho</option>
+          <option value="sans-serif">ゴシック体</option>
+        </select>
+      </div>
+      <div>
+        <input type="checkbox" id="swapTap">
+        <label for="swapTap">タップ左右入替</label>
+      </div>
+    </div>
+
+    <div class="viewer-container" id="viewerContainer">
+      <div class="text-content" id="textContent"></div>
+    </div>
+  </div>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // --- DOM取得 ---
+document.addEventListener('DOMContentLoaded', () => {
+
+      let db;
+      let currentFileId = null;
+      let scrollSaveTimer = null;
+      const DB_NAME = 'TxRV_FileCache';
+      const DB_VERSION = 1;
+      const STORE_NAME = 'files';
+
+      function initDB() {
+        return new Promise((resolve, reject) => {
+          if (!('indexedDB' in window)) {
+            alert('お使いのブラウザはIndexedDBをサポートしていません。');
+            return reject('IndexedDB not supported');
+          }
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+          request.onerror = (event) => {
+            console.error('IndexedDB error:', event.target.error);
+            reject('DB error');
+          };
+
+          request.onsuccess = (event) => {
+            db = event.target.result;
+            console.log('IndexedDB opened successfully.');
+            resolve(db);
+          };
+
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              const objectStore = db.createObjectStore(STORE_NAME, {
+                keyPath: 'id',
+                autoIncrement: true
+              });
+              objectStore.createIndex('fileName', 'fileName', {
+                unique: false
+              });
+              console.log('Object store created.');
+            }
+          };
+        });
+      }
+
+      function saveFileToDB(fileData) {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.add(fileData);
+
+          request.onsuccess = (event) => {
+            console.log('File saved to DB with id:', event.target.result);
+            resolve(event.target.result); // 新しいIDを返す
+          };
+          request.onerror = (event) => {
+            console.error('Error saving file:', event.target.error);
+            reject(event.target.error);
+          };
+        });
+      }
+
+      function getFileFromDB(id) {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readonly');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.get(id);
+
+          request.onsuccess = (event) => {
+            resolve(event.target.result);
+          };
+          request.onerror = (event) => {
+            console.error('Error getting file:', event.target.error);
+            reject(event.target.error);
+          };
+        });
+      }
+
+      function getAllFilesFromDB() {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readonly');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.getAll();
+
+          request.onsuccess = (event) => {
+            resolve(event.target.result);
+          };
+          request.onerror = (event) => {
+            console.error('Error getting all files:', event.target.error);
+            reject(event.target.error);
+          };
+        });
+      }
+
+      function deleteFileFromDB(id) {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.delete(id);
+
+          request.onsuccess = (event) => {
+            console.log('File deleted:', id);
+            resolve();
+          };
+          request.onerror = (event) => {
+            console.error('Error deleting file:', event.target.error);
+            reject(event.target.error);
+          };
+        });
+      }
+
+      function updateFilePosition(id, position) {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(STORE_NAME);
+          const getRequest = store.get(id);
+
+          getRequest.onsuccess = () => {
+            const fileData = getRequest.result;
+            if (fileData) {
+              fileData.lastPosition = position;
+              const putRequest = store.put(fileData);
+              putRequest.onsuccess = () => resolve();
+              putRequest.onerror = (e) => reject(e.target.error);
+            } else {
+              reject('File not found');
+            }
+          };
+          getRequest.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      const libraryView = document.getElementById('libraryView');
+      const readerView = document.getElementById('readerView');
+      const fileList = document.getElementById('fileList');
+      const libraryMessage = document.getElementById('libraryMessage');
+      const backToLibraryBtn = document.getElementById('backToLibraryBtn');
+
       const textContent = document.getElementById('textContent');
-      const viewerContainer = document.getElementById('viewerContainer');
+const viewerContainer = document.getElementById('viewerContainer');
       const controlsPanel = document.getElementById('controlsPanel');
       const uiToggleBtn = document.getElementById('uiToggleBtn');
       const fileInput = document.getElementById('fileInput');
       const encodingSelect = document.getElementById('encodingSelect');
-      const swapTapCheckbox = document.getElementById('swapTap');
+const swapTapCheckbox = document.getElementById('swapTap');
       const fontSizeSlider = document.getElementById('fontSize');
       const columnGapSlider = document.getElementById('columnGap');
       const letterSpacingSlider = document.getElementById('letterSpacing');
       const lineHeightSlider = document.getElementById('lineHeight');
-      const fontFamilySelect = document.getElementById('fontFamily');
+const fontFamilySelect = document.getElementById('fontFamily');
       const progressBar = document.getElementById('progressBar');
       const flipWidth = document.getElementById('flipWidth');
-      // --- プログレスバー ---
-      function updateProgress() {
+
+  
+      async function showLibraryView() {
+        currentFileId = null; // リーダーから離れるのでIDをリセット
+        readerView.classList.remove('active');
+        controlsPanel.classList.add('hidden');
+        uiToggleBtn.style.display = 'none';
+
+        libraryView.classList.add('active');
+        await populateLibrary();
+      }
+
+      async function openReaderView(id) {
+        try {
+          const fileData = await getFileFromDB(id);
+          if (!fileData) {
+            alert('ファイルの読み込みに失敗しました。');
+            return;
+          }
+          
+          currentFileId = id;
+          textContent.textContent = fileData.content;
+          textContent.style.color = '#333';
+          
+          libraryView.classList.remove('active');
+          readerView.classList.add('active');
+          uiToggleBtn.style.display = 'block';
+          controlsPanel.classList.remove('hidden'); // コントロールは表示
+          uiToggleBtn.textContent = '・';
+
+          viewerContainer.scrollLeft = fileData.lastPosition || 0;
+          setTimeout(updateProgress, 100); // プログレスバーに反映
+
+        } catch (error) {
+          console.error('Error opening reader:', error);
+          alert('リーダーの起動に失敗しました。');
+        }
+      }
+
+      async function populateLibrary() {
+        const files = await getAllFilesFromDB();
+        fileList.innerHTML = ''; // リストをクリア
+        if (files.length === 0) {
+          libraryMessage.style.display = 'block';
+        } else {
+          libraryMessage.style.display = 'none';
+          files.forEach(file => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <div class="file-info" data-id="${file.id}">
+                <strong>${escapeHTML(file.fileName)}</strong>
+                <span>(${file.encoding})</span>
+              </div>
+              <div class="file-actions">
+                <button class="delete-btn" data-id="${file.id}">削除</button>
+              </div>
+            `;
+            fileList.appendChild(li);
+          });
+
+          fileList.querySelectorAll('.file-info').forEach(item => {
+            item.addEventListener('click', (e) => {
+              const id = parseInt(e.currentTarget.dataset.id, 10);
+              openReaderView(id);
+            });
+          });
+
+          fileList.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation(); // 開くイベントを発火させない
+              const id = parseInt(e.currentTarget.dataset.id, 10);
+              if (confirm('本当にこのファイルを削除しますか？')) {
+                await deleteFileFromDB(id);
+                await populateLibrary(); // リストを再描画
+              }
+            });
+          });
+        }
+      }
+
+      function escapeHTML(str) {
+        return str.replace(/[&<>"']/g, function(match) {
+          return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          }[match];
+        });
+      }
+
+function updateProgress() {
         const container = viewerContainer;
-        const scrollableWidth = container.scrollWidth - container.clientWidth;
+const scrollableWidth = container.scrollWidth - container.clientWidth;
         if (scrollableWidth <= 0) {
           progressBar.value = 0;
-          return;
+return;
         }
         const progress = (Math.abs(container.scrollLeft) / scrollableWidth) * 100;
-        progressBar.value = Math.max(0, Math.min(100, progress));
+progressBar.value = Math.max(0, Math.min(100, progress));
       }
-      viewerContainer.addEventListener('scroll', updateProgress);
-      // --- ファイル読み込み ---
-      fileInput.addEventListener('change', (event) => {
+
+      function savePositionDebounced() {
+        if (scrollSaveTimer) {
+          clearTimeout(scrollSaveTimer);
+        }
+        scrollSaveTimer = setTimeout(async () => {
+          if (currentFileId !== null) {
+            const currentPosition = viewerContainer.scrollLeft;
+            try {
+              await updateFilePosition(currentFileId, currentPosition);
+              console.log(`Position saved for ${currentFileId}: ${currentPosition}`);
+            } catch (error) {
+              console.error('Failed to save position:', error);
+            }
+          }
+        }, 1000); // 1秒後に保存
+      }
+
+      viewerContainer.addEventListener('scroll', () => {
+        updateProgress();
+        savePositionDebounced(); // スクロール時にデバウンスで保存
+      });
+
+fileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (!file) return;
         const selectedEncoding = encodingSelect.value;
-        textContent.textContent = `読み込み中... (${selectedEncoding})`;
-        textContent.style.color = '#777';
+        
+        libraryMessage.textContent = `読み込み中... (${selectedEncoding})`;
+        libraryMessage.style.color = '#777';
+        libraryMessage.style.display = 'block';
+
         const reader = new FileReader();
         reader.readAsArrayBuffer(file);
-        reader.onload = (e) => {
-          try {
+        reader.onload = async (e) => {
+  try {
             const buffer = e.target.result;
             const decoder = new TextDecoder(selectedEncoding);
             const text = decoder.decode(buffer);
-            textContent.textContent = text;
-            textContent.style.color = '#333';
-            viewerContainer.scrollLeft = 0;
-            progressBar.value = 0;
-            setTimeout(updateProgress, 100);
+            
+            // DBに保存
+            const fileData = {
+              fileName: file.name,
+              encoding: selectedEncoding,
+              content: text,
+              lastPosition: 0 // 初期位置
+            };
+            const newId = await saveFileToDB(fileData);
+            
+            await openReaderView(newId);
+
+            fileInput.value = '';
+
           } catch (err) {
-            textContent.textContent = `エラー: [${selectedEncoding}] でデコード失敗。`;
-            textContent.style.color = '#c00';
+            libraryMessage.textContent = `エラー: [${selectedEncoding}] でデコード失敗。`;
+            libraryMessage.style.color = '#c00';
+            console.error(err);
           }
         };
+        reader.onerror = (e) => {
+          libraryMessage.textContent = 'ファイル読み込みエラー。';
+          libraryMessage.style.color = '#c00';
+        };
       });
-      // --- 設定UI ---
-      fontSizeSlider.addEventListener('input', (e) => {
+
+fontSizeSlider.addEventListener('input', (e) => {
         textContent.style.fontSize = e.target.value + 'rem';
       });
-      columnGapSlider.addEventListener('input', (e) => {
+columnGapSlider.addEventListener('input', (e) => {
         textContent.style.columnGap = e.target.value + 'em';
       });
-      letterSpacingSlider.addEventListener('input', (e) => {
+letterSpacingSlider.addEventListener('input', (e) => {
         textContent.style.letterSpacing = e.target.value + 'em';
       });
-      lineHeightSlider.addEventListener('input', (e) => {
+lineHeightSlider.addEventListener('input', (e) => {
         textContent.style.lineHeight = e.target.value;
       });
-      fontFamilySelect.addEventListener('input', (e) => {
+fontFamilySelect.addEventListener('input', (e) => {
         textContent.style.fontFamily = e.target.value;
       });
-      // --- トグル ---
-      uiToggleBtn.addEventListener('click', () => {
+
+uiToggleBtn.addEventListener('click', () => {
         controlsPanel.classList.toggle('hidden');
         uiToggleBtn.textContent = controlsPanel.classList.contains('hidden') ? '●' : '・';
       });
-      // --- タップ・スクロール判別機能 ---
-      // ★[修正] turnPage 関数 (v13)
-      // iPad Safari のスクロールバグ ( +/- の意味が逆) と
-      // v12の端チェックバグを修正
-      function turnPage(direction) { // 'next' または 'prev'
+
+      backToLibraryBtn.addEventListener('click', showLibraryView);
+
+function turnPage(direction) {
         const isSwapped = swapTapCheckbox.checked;
-        let actualDirection = direction;
+let actualDirection = direction;
         if (isSwapped) {
-          actualDirection = (direction === 'next') ? 'prev' : 'next';
+          actualDirection = (direction === 'next') ?
+'prev' : 'next';
         }
         const container = viewerContainer;
         const currentScroll = container.scrollLeft;
-        const maxScroll = container.scrollWidth - container.clientWidth;
+const maxScroll = container.scrollWidth - container.clientWidth;
         const errorMargin = 5;
         const pageWidth = container.clientWidth * flipWidth.value;
         let newScrollLeft;
-        // iPad Safari の挙動 ( +/- の意味が逆) に合わせる
-        if (actualDirection === 'next') {
-          // 「進む」 (Safariでは scrollLeft を減らす)
-          // ★修正：既に「先頭」(0) にいるなら、これ以上「進めない」(減らせない)
+if (actualDirection === 'next') {
           if (currentScroll >= errorMargin) return;
-          newScrollLeft = currentScroll - pageWidth;
+newScrollLeft = currentScroll - pageWidth;
         } else {
-          // 「戻る」 (Safariでは scrollLeft を増やす)
-          // ★修正：既に「末尾」(maxScroll) にいるなら、これ以上「戻れない」(増やせない)
           if (currentScroll >= (maxScroll - errorMargin)) return;
-          newScrollLeft = currentScroll + pageWidth;
+newScrollLeft = currentScroll + pageWidth;
         }
         container.scrollLeft = newScrollLeft;
-      }
-      // タップ判別ロジック
+}
       let touchStartTime = 0;
-      let touchStartScrollLeft = 0;
+let touchStartScrollLeft = 0;
       let touchStartClientX = 0;
       const MAX_TAP_DURATION = 300;
       const MAX_TAP_MOVE_X = 15;
       const MAX_TAP_SCROLL = 10;
-
-      function handleTouchStart(e) {
+function handleTouchStart(e) {
         touchStartTime = Date.now();
         touchStartScrollLeft = viewerContainer.scrollLeft;
-        touchStartClientX = (e.touches ? e.touches[0] : e).clientX;
+touchStartClientX = (e.touches ? e.touches[0] : e).clientX;
       }
-
       function handleTouchEnd(e) {
         const touchEndTime = Date.now();
-        const touchEndClientX = (e.changedTouches ? e.changedTouches[0] : e).clientX;
+const touchEndClientX = (e.changedTouches ? e.changedTouches[0] : e).clientX;
         const duration = touchEndTime - touchStartTime;
         const deltaX = Math.abs(touchEndClientX - touchStartClientX);
-        const deltaScroll = Math.abs(viewerContainer.scrollLeft - touchStartScrollLeft);
+const deltaScroll = Math.abs(viewerContainer.scrollLeft - touchStartScrollLeft);
         if (
           duration < MAX_TAP_DURATION &&
           deltaX < MAX_TAP_MOVE_X &&
           deltaScroll < MAX_TAP_SCROLL
         ) {
           const screenWidth = window.innerWidth;
-          // デフォルト: 左タップ = 'next' (進む), 右タップ = 'prev' (戻る)
-          if (touchEndClientX < screenWidth * 0.4) {
-            // 左タップ (進む)
+if (touchEndClientX < screenWidth * 0.4) {
             turnPage('next');
-          } else if (touchEndClientX > screenWidth * 0.6) {
-            // 右タップ (戻る)
+} else if (touchEndClientX > screenWidth * 0.6) {
             turnPage('prev');
-          }
+}
         }
       }
-      // イベントリスナー登録
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isTouchDevice = 'ontouchstart' in window ||
+navigator.maxTouchPoints > 0;
       if (isTouchDevice) {
         viewerContainer.addEventListener('touchstart', handleTouchStart, {
           passive: true
         });
-        viewerContainer.addEventListener('touchend', handleTouchEnd);
+viewerContainer.addEventListener('touchend', handleTouchEnd);
       } else {
         viewerContainer.addEventListener('mousedown', handleTouchStart);
         viewerContainer.addEventListener('mouseup', handleTouchEnd);
+}
+
+      async function main() {
+        try {
+          await initDB();
+          await showLibraryView(); // 最初に書庫ビューを表示
+        } catch (error) {
+          console.error('Failed to initialize app:', error);
+          alert('アプリケーションの初期化に失敗しました。');
+        }
       }
+      main();
+
     });
   </script>
 
